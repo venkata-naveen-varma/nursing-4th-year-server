@@ -6,7 +6,7 @@ import {
 const router = express.Router();
 
 // Agencies
-router.get("/list", getAgencies);
+router.post("/list", getAgencies);
 router.post("/register", addAgency);
 router.post("/id", getAgency);
 // router.post("/import", importAgency);
