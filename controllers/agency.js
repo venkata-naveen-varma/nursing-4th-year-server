@@ -4,17 +4,12 @@ import User from "../models/users.js";
 
 export const getAgencies = async (req, res) => {
     try {
-        const user_details = await User.findById(req.session.user);
+        const user_details = req.session.user;
         const agency_type = req.body.type;
         if(!agency_type){
             return res
                 .status(400)
                 .json({ message: "agency_type is missing!" });
-        }
-        if(!user_details){
-            return res
-                .status(400)
-                .json({ message: "Invalid token." });
         }
         let agencies, totalCount;
         if(user_details.type == "student"){
@@ -56,15 +51,9 @@ export const getAgency = async (req, res) => {
 
 export const addAgency = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user);
-        if(!user){
-            return res
-                .status(400)
-                .json({ message: "Invalid token." });
-        }
+        const user = req.session.user;
         if(user.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
-            
         }
         const { name, agency_type, placement_type} = req.body;
         const existingAgency = await Agency.findOne({ name, placement_type, agency_type});
@@ -84,12 +73,7 @@ export const addAgency = async (req, res) => {
 
 export const updateAgency = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user);
-        if(!user){
-            return res
-                .status(400)
-                .json({ message: "Invalid token." });
-        }
+        const user = req.session.user;
         if(user.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
         }
@@ -117,12 +101,7 @@ export const updateAgency = async (req, res) => {
 };
 export const deleteAgency = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user);
-        if(!user){
-            return res
-                .status(400)
-                .json({ message: "Invalid token." });
-        }
+        const user = req.session.user;
         if(user.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
         }
@@ -138,13 +117,3 @@ export const deleteAgency = async (req, res) => {
         return res.status(400).json({ message: err.message });
     }
 };
-
-// export const deleteAgencies = async (req, res) => {
-//     const { body } = req;
-//     try {
-//         await Agency.deleteMany({ _id: { $in: body } });
-//         res.json({ message: "Agencies deleted successfully." });
-//     } catch (err) {
-//         return res.status(400).json({ message: err.message });
-//     }
-// };

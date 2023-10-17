@@ -10,7 +10,7 @@ export const isCurrentUserAdmin = async (userId) => {
 
 export const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user);
+        const user = req.session.user;
 
         return res.json({
             id: user._id,
@@ -93,7 +93,8 @@ export const loginUser = async (req, res) => {
             user: {
                 id: user._id,
                 displayName: user.displayName,
-                username: user.username
+                username: user.username,
+                type: user.type
             }
         });
     } catch (error) {

@@ -6,12 +6,7 @@ import User from '../models/users.js';
 // student request for their specific plan, admin request all plans
 export const getClinicalPlans = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user);
-        if(!user){
-            return res
-                .status(400)
-                .json({ message: "Invalid token." });
-        }
+        const user = req.session.user;
         // student requesting the clinical plan details
         if(user.type == "student"){
             const student_details = await Student.findOne({"email":user.username});
@@ -28,7 +23,7 @@ export const getClinicalPlans = async (req, res) => {
         }
         // list of all clinical plans for admin view
         const clinical_plans = await ClinicalPlan.find({})
-        .sort({createdAt: -1})
+        .sort({createdAt: -1});
         // .populate("student_object");
 
         const totalCount = clinical_plans.length;
@@ -45,13 +40,9 @@ export const getClinicalPlans = async (req, res) => {
 
 export const addClinicalPlan = async (req, res) => {
     try {
-        const user = await User.findById(req.session.user);
-        if(!user){
-            return res.status(400)
-                .json({ message: "Invalid token." });
-        }
+        const user = req.session.user;
         if(user.type != "student"){
-            return res.status(400).json({message: "Only Studens can register for a Clinical Plan!"});
+            return res.status(400).json({message: "Only Students can register for a Clinical Plan!"});
         }
         else{
             // fetching studentId

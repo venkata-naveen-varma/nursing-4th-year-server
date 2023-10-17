@@ -3,21 +3,18 @@ import {
     addStudent, deleteStudent,getStudent,
     getStudents, updateStudent
 } from "../controllers/students.js";
+import Auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/list", getStudents);
+router.get("/list", Auth, getStudents);
 
-router.post("/id", getStudent);
+router.post("/id", Auth, getStudent);
 
-// router.get("/:id/placements", getStudentPlacements);
+router.post("/add", Auth, addStudent);
 
-router.post("/add", addStudent);
+// router.post("/update", Auth, updateStudent);
 
-// router.post("/import", importStudents);
-
-// router.post("/update", updateStudent);
-
-router.post("/delete", deleteStudent); // For single deletion
+router.post("/delete", Auth, deleteStudent);
 
 export default router;

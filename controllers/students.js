@@ -5,12 +5,7 @@ import bcrypt from "bcrypt";
 
 export const getStudents = async (req, res) => {
     try {
-        const user_data = await User.findById(req.session.user);
-        if(!user_data){
-            return res
-                .status(400)
-                .json({ message: "Unauthorized access!" });
-        }
+        const user_data = req.session.user;
         if(user_data.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
         }
@@ -74,12 +69,7 @@ export const getStudent = async (req, res) => {
 
 export const addStudent = async (req, res) => {
     try {
-        const user_data = await User.findById(req.session.user);
-        if(!user_data){
-            return res
-                .status(400)
-                .json({ message: "Unauthoirized access!" });
-        }
+        const user_data = req.session.user;
         if(user_data.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
         }
@@ -134,12 +124,7 @@ export const addStudent = async (req, res) => {
 
 export const updateStudent = async (req, res) => {
     try {
-        const user_data = await User.findById(req.session.user);
-        if(!user_data){
-            return res
-                .status(400)
-                .json({ message: "Unauthorized access!" });
-        }
+        const user_data = req.session.user;
         if(user_data.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
         }
