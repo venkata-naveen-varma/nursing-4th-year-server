@@ -59,7 +59,7 @@ export const addClinicalPlan = async (req, res) => {
             req.body.student_object = student_details._id;
             const clinical_plan = new ClinicalPlan(req.body);
             await clinical_plan.save();
-            return res.status(201).json(clinical_plan);
+            return res.status(200).json(clinical_plan);
         }
     } catch (err) {
         return res.status(400).json({ message: err.message });

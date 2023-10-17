@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Student from "../models/students.js";
 import User from "../models/users.js";
 import bcrypt from "bcrypt";
+import Agency from "../models/agency.js";
 
 export const getStudents = async (req, res) => {
     try {
@@ -151,12 +152,7 @@ export const updateStudent = async (req, res) => {
 
 export const deleteStudent = async (req, res) => {
     try {
-        const user_data = await User.findById(req.session.user);
-        if(!user_data){
-            return res
-                .status(400)
-                .json({ message: "Unauthorized access!" });
-        }
+        const user_data = req.session.user;
         if(user_data.type == "student"){
             return res.status(401).json({message: "Unauthorized access!"});
         }
@@ -169,6 +165,62 @@ export const deleteStudent = async (req, res) => {
             return res.status(404).json({ message: "User not found.." });
         }
     } catch (err) {
+        return res.status(400).json({ message: err.message });
+    }
+};
+
+export const registerToHospital = async (req, res) => {
+    try {
+        const student = await Student.findOne({"email": req.session.user.username});
+        const {placement_type, agency_name, notes} = req.body;
+        const agency_type = "hospital";
+        const agency = await Agency.findOne({"name": agency_name, placement_type, agency_type});
+        let placement_list = agency.placements;
+        // check for duplicate request
+        for(let i=0; i<placement_list.length;i++){
+            if(placement_list[i].student.equals(student._id)){
+                return res.status(200).json({message: "Already registered!"});
+            }
+        }
+        let {current_capacity} = agency;
+        if(current_capacity <= 0){
+            return res.status(200).json({message: "Slots full!"});
+        }
+        agency.current_capacity = current_capacity - 1;
+        agency.placements.push({"student": student._id, notes});
+        student.placements.push({"agency": agency._id, notes});
+        agency.save();
+        student.save();
+        return res.status(200).json({message: "Registered Successfully!"});
+    }catch(err){
+        return res.status(400).json({ message: err.message });
+    }
+};
+
+export const registerToCommunity = async (req, res) => {
+    try {
+        const student = await Student.findOne({"email": req.session.user.username});
+        const {placement_type, agency_name, notes} = req.body;
+        const agency_type = "community";
+        const agency = await Agency.findOne({"name": agency_name, placement_type, agency_type});
+        let {current_capacity} = agency;
+        let placement_list = agency.placements;
+        // check for duplicate request
+        for(let i=0; i<placement_list.length;i++){
+            if(placement_list[i].student.equals(student._id)){
+                return res.status(200).json({message: "Already registered!"});
+            }
+        }
+        if(current_capacity <= 0){
+            return res.status(200).json({message: "Slots full!"});
+        }
+        agency.current_capacity = current_capacity - 1;
+        agency.placements.push({"student": student._id, notes});
+        student.placements.push({"agency": agency._id, notes});
+        agency.save();
+        student.save();
+        return res.status(200).json({message: "Registered Successfully!"});
+    }catch(err){
         return res.status(400).json({ message: err.message });
     }
 };

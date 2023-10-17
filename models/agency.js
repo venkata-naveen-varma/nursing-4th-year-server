@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { SchemaType } from "mongoose";
+
+const { Schema } = mongoose;
 
 const AgencySchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
@@ -16,7 +18,8 @@ const AgencySchema = new mongoose.Schema({
     total_capacity: {type: Number, required: true},
     current_capacity: {type: Number,required: true},
     attached_file: {type: String, trim: true}, // upload file in a cloud storage and store the location in the DB
-    visibility: {type: Boolean, default: true}
+    visibility: {type: Boolean, default: true},
+    placements: [{student: {type: Schema.Types.ObjectId, ref:"students"}, notes: {type: String, trim: true}}]
 }, { timestamps: true });
 
 const Agency = mongoose.model("Agency", AgencySchema);

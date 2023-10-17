@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { SchemaType } from "mongoose";
 
 const { Schema } = mongoose;
 
@@ -12,8 +12,7 @@ const StudentsSchema = new Schema({
     year: { type: Number, required: true },
     term: { type: String, required: true },
     notes: { type: String, default: "" },
-    // placementLocationsHistory: [{ type: Schema.Types.ObjectId, ref: "PlacementLocation" }],
-    // clinicalPlanHistory: [{ type: Schema.Types.ObjectId, ref: "ClinicalPlan" }]
+    placements: [{agency: {type: Schema.Types.ObjectId, ref: "Agency"}, notes:{type: String, trim: true}}]
 }, { timestamps: true });
 
 const Student = mongoose.model("Student", StudentsSchema);
