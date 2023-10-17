@@ -1,19 +1,16 @@
 import express from "express";
 import {
-    registerUser, loginUser, checkIfTokenIsValid, getUser
+    registerUser, loginUser, getUser, logoutUser
 } from "../controllers/users.js";
-import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/", auth, getUser);
+router.get("/", getUser);
 
 router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 
-// router.post("/admin_login", loginUser);
-
-router.post("/isValidToken", checkIfTokenIsValid);
+router.post("/logout", logoutUser)
 
 export default router;

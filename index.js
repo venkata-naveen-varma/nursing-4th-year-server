@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import {connectToDB} from "./utils.js";
 import indexRouter from "./routes/index.js";
 import bodyParser from "body-parser";
+import session from "express-session";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -17,6 +19,14 @@ app.use(cors());
 //     optionsSuccessStatus: 200
 // };
 // app.use(cors(corsOptions));
+
+app.use(cookieParser());
+ 
+app.use(session({
+    secret: "drthrthvfr",
+    saveUninitialized: true,
+    resave: true
+}));
 
 app.use("", indexRouter);
 

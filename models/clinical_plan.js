@@ -1,9 +1,11 @@
+import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
 const ClinicalPlanSchema = new Schema({
-    studentId: { type: Schema.Types.ObjectId, ref: "Student" },
+    studentId: { type: String, required: true, trim: true},
+    student_object: {type: Schema.Types.ObjectId, ref: "Student"},
     begin_nursing_site: {type: String, required: true},
     completing_nursing_site: {type: String, required: true},
     semester_sequence: {type: String, required: true},

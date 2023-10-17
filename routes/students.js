@@ -1,7 +1,7 @@
 import express from "express";
 import {
     addStudent, deleteStudent,getStudent,
-    getStudents, updateStudent, getStudentPlacements
+    getStudents, updateStudent
 } from "../controllers/students.js";
 
 const router = express.Router();
@@ -19,7 +19,5 @@ router.post("/add", addStudent);
 // router.post("/update", updateStudent);
 
 router.post("/delete", deleteStudent); // For single deletion
-
-// router.post("/delete", deleteStudents); // For multiple deletion
 
 export default router;

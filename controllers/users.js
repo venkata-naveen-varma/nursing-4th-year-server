@@ -10,7 +10,7 @@ export const isCurrentUserAdmin = async (userId) => {
 
 export const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.user);
+        const user = await User.findById(req.session.user);
 
         return res.json({
             id: user._id,
@@ -18,7 +18,7 @@ export const getUser = async (req, res) => {
             username: user.username
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -62,7 +62,7 @@ export const registerUser = async (req, res) => {
         await user.save();
         res.json({ message: "Successfully registered" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -84,9 +84,12 @@ export const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        
+        req.session.user = user;
+        req.session.save();
+        
         res.json({
-            token,
             user: {
                 id: user._id,
                 displayName: user.displayName,
@@ -94,23 +97,15 @@ export const loginUser = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
-export const checkIfTokenIsValid = async (req, res) => {
-    try {
-        const token = req.header("x-auth-token");
-        if (!token) return res.json(false);
-
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        if (!verified) return res.json(false);
-
-        const user = await User.findById(verified.id);
-        if (!user) return res.json(false);
-
-        return res.json(true);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+export const logoutUser = async (req, res) => {
+    try{
+        req.session.destroy();
+        return res.status(200).json({message:"Logged out successfully!"});
+    }catch(error){
+        return res.status(500).json({error: error.message});
     }
-};
+}

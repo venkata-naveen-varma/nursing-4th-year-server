@@ -4,7 +4,7 @@ import User from "../models/users.js";
 
 export const getAgencies = async (req, res) => {
     try {
-        const user_details = await User.findById(req.user);
+        const user_details = await User.findById(req.session.user);
         const agency_type = req.body.type;
         if(!agency_type){
             return res
@@ -25,12 +25,12 @@ export const getAgencies = async (req, res) => {
             .sort({ createdAt: -1 });
         }
         totalCount = agencies.length;
-        res.status(200).json({
+        return res.status(200).json({
             data: agencies,
             totalCount
         });
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
@@ -48,22 +48,23 @@ export const getAgency = async (req, res) => {
                 .status(400)
                 .json({ message: "Requested agency does not exist." });
         }
-        res.status(200).json(agency);
+        return res.status(200).json(agency);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
 export const addAgency = async (req, res) => {
     try {
-        const user = await User.findById(req.user);
+        const user = await User.findById(req.session.user);
         if(!user){
             return res
                 .status(400)
                 .json({ message: "Invalid token." });
         }
         if(user.type == "student"){
-            res.status(401).json({message: "Unauthorized access!"});
+            return res.status(401).json({message: "Unauthorized access!"});
+            
         }
         const { name, agency_type, placement_type} = req.body;
         const existingAgency = await Agency.findOne({ name, placement_type, agency_type});
@@ -75,31 +76,22 @@ export const addAgency = async (req, res) => {
         req.body["current_capacity"] = req.body.total_capacity
         const agency = new Agency(req.body);
         await agency.save();
-        res.status(201).json(agency);
+        return res.status(201).json(agency);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
-// export const importAgency = async (req, res) => {
-//     try {
-//         const { body } = req;
-//         await agency.insertMany(body);
-//         res.json({ message: " Uploaded successfully." });
-//     } catch (err) {
-//         res.status(400).json({ message: err.message });
-//     }
-// };
 
 export const updateAgency = async (req, res) => {
     try {
-        const user = await User.findById(req.user);
+        const user = await User.findById(req.session.user);
         if(!user){
             return res
                 .status(400)
                 .json({ message: "Invalid token." });
         }
         if(user.type == "student"){
-            res.status(401).json({message: "Unauthorized access!"});
+            return res.status(401).json({message: "Unauthorized access!"});
         }
         const {id} = req.body;
         const { body } = req;
@@ -118,21 +110,21 @@ export const updateAgency = async (req, res) => {
                 .status(400)
                 .json({ message: "Requested agency does not exist." });
         }
-        res.status(200).json(agency);
+        return res.status(200).json(agency);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 export const deleteAgency = async (req, res) => {
     try {
-        const user = await User.findById(req.user);
+        const user = await User.findById(req.session.user);
         if(!user){
             return res
                 .status(400)
                 .json({ message: "Invalid token." });
         }
         if(user.type == "student"){
-            res.status(401).json({message: "Unauthorized access!"});
+            return res.status(401).json({message: "Unauthorized access!"});
         }
         const id = req.body._id;
         agency = await Agency.findByIdAndDelete(id);
@@ -141,9 +133,9 @@ export const deleteAgency = async (req, res) => {
                 .status(400)
                 .json({ message: "Requested agency does not exist." });
         }
-        res.status(200).json({ message: "Successfully deleted" });
+        return res.status(200).json({ message: "Successfully deleted" });
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
@@ -153,6 +145,6 @@ export const deleteAgency = async (req, res) => {
 //         await Agency.deleteMany({ _id: { $in: body } });
 //         res.json({ message: "Agencies deleted successfully." });
 //     } catch (err) {
-//         res.status(400).json({ message: err.message });
+//         return res.status(400).json({ message: err.message });
 //     }
 // };

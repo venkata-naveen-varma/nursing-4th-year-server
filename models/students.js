@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const StudentsSchema = new Schema({
-    studentId: { type: Number, required: true },
+    studentId: { type: String, required: true, trim: true },
     fname: { type: String, required: true, trim: true },
     lname: { type: String, required: true, trim: true },
     email: { type: String, required: true },
@@ -13,7 +13,7 @@ const StudentsSchema = new Schema({
     term: { type: String, required: true },
     notes: { type: String, default: "" },
     // placementLocationsHistory: [{ type: Schema.Types.ObjectId, ref: "PlacementLocation" }],
-    clinicalPlanHistory: [{ type: Schema.Types.ObjectId, ref: "ClinicalPlan" }]
+    // clinicalPlanHistory: [{ type: Schema.Types.ObjectId, ref: "ClinicalPlan" }]
 }, { timestamps: true });
 
 const Student = mongoose.model("Student", StudentsSchema);
