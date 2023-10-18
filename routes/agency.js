@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    addAgency, deleteAgency, getAgencies, updateAgency, getAgency
+    addAgency, deleteAgency, getAgencies, updateAgency, getAgency, agencyPlacements
 } from "../controllers/agency.js";
 import Auth from "../middleware/auth.js";
 
@@ -12,5 +12,6 @@ router.post("/register", Auth, addAgency);
 router.post("/id", Auth, getAgency);
 router.post("/update", Auth, updateAgency);
 router.post("/delete", Auth, deleteAgency); // For single delete
+router.post("/placements", Auth, agencyPlacements);
 
 export default router;

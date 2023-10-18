@@ -19,7 +19,7 @@ const AgencySchema = new mongoose.Schema({
     current_capacity: {type: Number,required: true},
     attached_file: {type: String, trim: true}, // upload file in a cloud storage and store the location in the DB
     visibility: {type: Boolean, default: true},
-    placements: [{student: {type: Schema.Types.ObjectId, ref:"students"}, notes: {type: String, trim: true}}]
+    placements: [{student: {type: Schema.Types.ObjectId, ref:"Student"}, notes: {type: String, trim: true}}]
 }, { timestamps: true });
 
 const Agency = mongoose.model("Agency", AgencySchema);

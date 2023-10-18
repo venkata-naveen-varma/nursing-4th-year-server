@@ -1,7 +1,6 @@
 import express from "express";
 import {
-    addStudent, deleteStudent,getStudent,
-    getStudents, updateStudent, registerToHospital, registerToCommunity
+    addStudent, deleteStudent,getStudent, getStudents, updateStudent, registerToHospital, registerToCommunity, studentPlacements, placementTypes, agencyNames
 } from "../controllers/students.js";
 import Auth from "../middleware/auth.js";
 
@@ -13,12 +12,18 @@ router.post("/id", Auth, getStudent);
 
 router.post("/add", Auth, addStudent);
 
+router.post("/delete", Auth, deleteStudent);
+
 router.post("/hospital", Auth, registerToHospital);
 
 router.post("/community", Auth, registerToCommunity);
 
-// router.post("/update", Auth, updateStudent);
+router.post("/placements", Auth, studentPlacements);
 
-router.post("/delete", Auth, deleteStudent);
+router.post("/placementTypes", Auth, placementTypes);
+
+router.post("/agencyNames", Auth, agencyNames);
+
+// router.post("/update", Auth, updateStudent);
 
 export default router;

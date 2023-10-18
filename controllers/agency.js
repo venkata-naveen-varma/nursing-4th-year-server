@@ -117,3 +117,26 @@ export const deleteAgency = async (req, res) => {
         return res.status(400).json({ message: err.message });
     }
 };
+
+// get lsit of placements of an agency
+export const agencyPlacements = async (req, res) => {
+    try {
+        const user = req.session.user;
+
+        if(user.type == "student"){
+            // if request is from student
+            return res.status(400).json({"message": "Unauthorized user!"});
+        }
+        const {id} = req.body;
+        const agency = await Agency.findById(id, 'name placement_type agency_type')
+        .sort({createdAt: -1})
+        .populate({path: 'placements.student', select: ['studentId','fname','lname','email','year','term']});
+        const total_count = agency.placements.length;
+        if(total_count==0){
+            return res.status(200).json({agency, total_count, "message": "No placements"});
+        }
+        return res.status(200).json({agency, total_count, msg: "list of placements of requested agency"});
+    } catch (err) {
+        return res.status(400).json({ message: err.message });
+    }
+};

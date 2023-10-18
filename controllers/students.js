@@ -169,6 +169,7 @@ export const deleteStudent = async (req, res) => {
     }
 };
 
+// student register to a hospital
 export const registerToHospital = async (req, res) => {
     try {
         const student = await Student.findOne({"email": req.session.user.username});
@@ -197,6 +198,7 @@ export const registerToHospital = async (req, res) => {
     }
 };
 
+// student register to a community
 export const registerToCommunity = async (req, res) => {
     try {
         const student = await Student.findOne({"email": req.session.user.username});
@@ -224,3 +226,67 @@ export const registerToCommunity = async (req, res) => {
         return res.status(400).json({ message: err.message });
     }
 };
+
+// gives list of placements(hospital and community) of a student
+export const studentPlacements = async (req, res) => {
+    try {
+        const user = req.session.user;
+        const {id} = req.body;
+
+        if(user.type == "student"){
+            // if request is from student
+            const student = await Student.findOne({"email": user.username}, 'studentId')
+            .sort({createdAt: -1})
+            .populate({path: 'placements.agency', select: ['name','placement_type','agency_type']});
+            const total_count = student.placements.length;
+            if(total_count==0){
+                return res.status(200).json({student, message: "No placements", total_count});
+            }
+            return res.status(200).json({student, total_count, msg: "list of placements of requested student"});
+       }
+        if(!id && user.type == "admin"){
+            // if request is from admin without student record id return all student placement details
+            const student = await Student.find({}, 'studentId fname lname email year term')
+            .sort({createdAt: -1})
+            .populate({path: 'placements.agency', select: ['name','placement_type','agency_type']});
+            return res.status(200).json({student, msg: "list of all student-placement details"});
+        }
+        // if request is from admin with student record id
+        const student = await Student.findById(id, 'studentId')
+        .sort({createdAt: -1})
+        .populate({path: 'placements.agency', select: ['name','placement_type','agency_type']});
+        const total_count = student.placements.length;
+        if(total_count==0){
+            return res.status(200).json({student,"message": "No placements", total_count});
+        }
+        return res.status(200).json({student, total_count, msg: "list of placements of requested student"});
+    } catch (err) {
+        return res.status(400).json({ message: err.message });
+    }
+};
+
+// student request list of all plcement_types from agencies
+export const placementTypes = async (req, res) => {
+    try{
+        const {agency_type} = req.body;
+        const placement_types = await Agency.find({agency_type}, 'placement_type').distinct('placement_type');
+        return res.status(200).json({placement_types, "msg": "List of placement-types"});
+    }catch(err){
+        return res.status(400).json({ message: err.message });
+    }
+}
+
+// student request list of agency names and current capacity from agencies based on placement_type and visibility
+export const agencyNames = async (req, res) => {
+    try{
+        const {placement_type, agency_type} = req.body;
+        const agency = await Agency.find({agency_type, placement_type, current_capacity: {$gt:0}, visibility: true}, 'name current_capacity');
+        let total_count = agency.length;
+        if(total_count == 0){
+            return res.status(200).json({agency, total_count,"message": "No agencies available"});
+        }
+        return res.status(200).json({agency, total_count, "msg": "List of agency-names with slots available"});
+    }catch(err){
+        return res.status(400).json({ message: err.message });
+    }
+}
