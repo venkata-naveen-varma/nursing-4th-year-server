@@ -8,6 +8,8 @@ import bodyParser from "body-parser";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 
+mongoose.set('strictQuery', false);
+
 dotenv.config();
 
 const app = express();

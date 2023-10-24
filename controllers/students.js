@@ -12,7 +12,7 @@ export const getStudents = async (req, res) => {
         }
         else{
             const {
-                index, limit, term, year
+                start, limit, term, year
             } = req.query;
     
             const findParams = {};
@@ -25,9 +25,9 @@ export const getStudents = async (req, res) => {
             }
     
             const Studentrec = await Student.find(findParams)
-                .sort({ createdAt: -1 })
-                // .limit(limit)
-                // .skip(index);
+                .sort({ studentId: -1 })
+                .limit(limit)
+                .skip(start);
                 // .populate("school");
     
             const totalCount = await Student.find(findParams).count();
