@@ -16,11 +16,12 @@ const app = express();
 const port = process.env.PORT || 8000;
 app.use(bodyParser.json());
 app.use(cors());
-// const corsOptions = {
-//     origin: "http://localhost:3000", // Replace with your frontend's URL
-//     optionsSuccessStatus: 200
-// };
-// app.use(cors(corsOptions));
+const corsOptions = {
+    origin: ["http://localhost:3000", "http://localhost:5173"], // Replace with your frontend's URL
+    optionsSuccessStatus: 200,
+    credentials: true
+};
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
  
