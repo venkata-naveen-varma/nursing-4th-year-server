@@ -3,6 +3,7 @@ import Student from "../models/students.js";
 import User from "../models/users.js";
 import bcrypt from "bcrypt";
 import Agency from "../models/agency.js";
+import ToggleAgencyRegister from "../models/toggleAgencyRegistration.js";
 
 export const getStudents = async (req, res) => {
     try {
@@ -172,6 +173,12 @@ export const deleteStudent = async (req, res) => {
 // student register to a hospital
 export const registerToHospital = async (req, res) => {
     try {
+        // check if registration for hospital is open or not
+        const toggleObj = await ToggleAgencyRegister.findOne({});
+        if(toggleObj.hospital === false){
+            return res.status(400).json({"message": "Hospital registration not open yet"});
+        }
+        
         const student = await Student.findOne({"email": req.session.user.username});
         const {placement_type, agency_name, notes} = req.body;
         const agency_type = "hospital";
@@ -180,7 +187,7 @@ export const registerToHospital = async (req, res) => {
         // check for duplicate request
         for(let i=0; i<placement_list.length;i++){
             if(placement_list[i].student.equals(student._id)){
-                return res.status(200).json({message: "Already registered!"});
+                return res.status(400).json({message: "Already registered!"});
             }
         }
         let {current_capacity} = agency;
@@ -201,6 +208,12 @@ export const registerToHospital = async (req, res) => {
 // student register to a community
 export const registerToCommunity = async (req, res) => {
     try {
+        // check if registration for community is open or not
+        const toggleObj = await ToggleAgencyRegister.findOne({});
+        if(toggleObj.community === false){
+            return res.status(400).json({"message": "Community registration not open yet"});
+        }
+
         const student = await Student.findOne({"email": req.session.user.username});
         const {placement_type, agency_name, notes} = req.body;
         const agency_type = "community";
@@ -210,7 +223,7 @@ export const registerToCommunity = async (req, res) => {
         // check for duplicate request
         for(let i=0; i<placement_list.length;i++){
             if(placement_list[i].student.equals(student._id)){
-                return res.status(200).json({message: "Already registered!"});
+                return res.status(400).json({message: "Already registered!"});
             }
         }
         if(current_capacity <= 0){

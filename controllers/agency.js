@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Agency from "../models/agency.js";
 import User from "../models/users.js";
+import ToggleAgencyRegister from "../models/toggleAgencyRegistration.js";
 
 export const getAgencies = async (req, res) => {
     try {
@@ -137,6 +138,28 @@ export const agencyPlacements = async (req, res) => {
         }
         return res.status(200).json({agency, total_count, msg: "list of placements of requested agency"});
     } catch (err) {
+        return res.status(400).json({ message: err.message });
+    }
+};
+
+// ON/OFF hosiptal/community registration
+export const toggleAgencyRegistration = async (req, res) => {
+    try{
+        const user = req.session.user;
+        const {hospital, community} = req.body;
+        req.body.updated_by = user._id;
+        if(hospital && (!(typeof(hospital) == "boolean"))){
+            return res.status(400).json({"message": "Invalid data provided"});
+        }
+        if(community && (!(typeof(community) == "boolean"))){
+            return res.status(400).json({"message": "Invalid data provided"});
+        }
+        const toggleObj = await ToggleAgencyRegister.findOneAndUpdate({}, req.body, {returnOriginal: false});
+        if(!toggleObj){
+            return res.status(400).json({message: "Update Unsuccessfull"});
+        }
+        return res.status(200).json({data: toggleObj, message: "Updated Successfully"});
+    }catch(err){
         return res.status(400).json({ message: err.message });
     }
 };
