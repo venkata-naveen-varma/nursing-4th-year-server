@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import User from "../models/users.js";
+import Student from "../models/students.js";
 
 export const isCurrentUserAdmin = async (userId) => {
     const user = await User.findById(userId);
@@ -17,6 +18,23 @@ export const getUser = async (req, res) => {
             displayName: user.displayName,
             username: user.username
         });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+// To get details of loggedIn user, whether a user is a student or admin
+export const getUserDetails = async (req, res) => {
+    try {
+        const user = req.session.user;
+        if(!user){
+            return res.json({"loggedin": false});
+        }
+        if(user.type == "student"){
+            const Studentrec = await Student.findOne({"email":user.username});
+            Studentrec.type = "student";
+            return res.status(200).json({"loggedin": true, "user": Studentrec});
+        }
+        return res.json({"loggedin": true, "user":{"id": user._id,"displayName": user.displayName,"username": user.username, "type": "admin"}});
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
