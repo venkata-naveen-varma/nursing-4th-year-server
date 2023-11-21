@@ -163,3 +163,13 @@ export const toggleAgencyRegistration = async (req, res) => {
         return res.status(400).json({ message: err.message });
     }
 };
+
+// get details of agency toggle
+export const agencyToggleDetails = async (req, res) => {
+    try{
+        const toggleDetails = await ToggleAgencyRegister.findOne({});
+        return res.status(200).json({data: toggleDetails});
+    }catch(err){
+        return res.status(400).json({ message: err.message });
+    }
+};

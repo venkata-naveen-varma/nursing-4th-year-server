@@ -4,7 +4,7 @@ const auth = (req, res, next) => {
             return res.status(400).json({message: "Login required"});
         }
         if(req.session.user.type == "student"){
-            return res.status(401).json({message: "Unauthorized access, Try using Student Login"});
+            return res.status(401).json({message: "Unauthorized access"});
         }
         next();
     } catch (error) {
