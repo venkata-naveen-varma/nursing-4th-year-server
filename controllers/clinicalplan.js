@@ -17,7 +17,7 @@ export const getClinicalPlans = async (req, res) => {
 
             const totalCount = await ClinicalPlan.find({}).count();
 
-            res.status(200).json({
+            return res.status(200).json({
                 data: clinical_plans,
                 totalCount
             });
@@ -29,13 +29,13 @@ export const getClinicalPlans = async (req, res) => {
 
         const totalCount = clinical_plans.length;
 
-        res.status(200).json({
+        return res.status(200).json({
             data: clinical_plans,
             totalCount
         });
 
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
@@ -47,13 +47,13 @@ export const getSemOptions = async (req, res) => {
         .sort({createdAt: -1});
         
         const totalCount = semesterOptions.length;
-        res.status(200).json({
+        return res.status(200).json({
             data: semesterOptions,
             totalCount
         });
 
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
@@ -81,7 +81,7 @@ export const setSemOptions = async (req, res) => {
         const all_options = await SemesterOptions.find({});
         return res.status(200).json({data: all_options, message: "Semester Options updated successfully."});
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
@@ -95,7 +95,7 @@ export const delSemOptions = async (req, res) => {
         await SemesterOptions.remove({});
         return res.status(200).json({message: "Semester Options deleted successfully."});
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
     }
 };
 
