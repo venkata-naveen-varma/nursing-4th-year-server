@@ -181,6 +181,9 @@ export const registerToHospital = async (req, res) => {
         
         const student = await Student.findOne({"email": req.session.user.username});
         const {placement_type, agency_name, notes} = req.body;
+        if(!placement_type || !agency_name){
+            return res.status(400).json({message: "Please fill the details first"});
+        }
         const agency_type = "hospital";
         const agency = await Agency.findOne({"name": agency_name, placement_type, agency_type});
         let placement_list = agency.placements;
@@ -216,6 +219,9 @@ export const registerToCommunity = async (req, res) => {
 
         const student = await Student.findOne({"email": req.session.user.username});
         const {placement_type, agency_name, notes} = req.body;
+        if(!placement_type || !agency_name){
+            return res.status(400).json({message: "Please fill the details first"});
+        }
         const agency_type = "community";
         const agency = await Agency.findOne({"name": agency_name, placement_type, agency_type});
         let {current_capacity} = agency;
