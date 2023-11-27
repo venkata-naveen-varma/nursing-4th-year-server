@@ -29,12 +29,13 @@ export const getUserDetails = async (req, res) => {
         if(!user){
             return res.json({"loggedin": false});
         }
+        const user_data = {"id": user._id,"displayName": user.displayName,"username": user.username, "type": "admin"}
         if(user.type == "student"){
+            user_data["type"] = "student"
             const Studentrec = await Student.findOne({"email":user.username});
-            Studentrec.type = "student";
-            return res.status(200).json({"loggedin": true, "user": Studentrec});
+            return res.status(200).json({"loggedin": true, "user": user_data, "student_data": Studentrec});
         }
-        return res.json({"loggedin": true, "user":{"id": user._id,"displayName": user.displayName,"username": user.username, "type": "admin"}});
+        return res.json({"loggedin": true, "user":user_data});
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
