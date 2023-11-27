@@ -3,6 +3,7 @@ import ClinicalPlan from '../models/clinical_plan.js'
 import Student from '../models/students.js';
 import User from '../models/users.js';
 import SemesterOptions from '../models/clinical_plan_semesterOptions.js'
+import ToggleClinicalPlanRegister from "../models/toggleClinicalPlanRegistration.js";
 
 // student request for their specific plan, admin request all plans
 export const getClinicalPlans = async (req, res) => {
@@ -102,6 +103,11 @@ export const delSemOptions = async (req, res) => {
 
 export const addClinicalPlan = async (req, res) => {
     try {
+        // check if registration for clinicalPlan is open or not
+        const toggleObj = await ToggleClinicalPlanRegister.findOne({});
+        if(toggleObj.registration_open === false){
+            return res.status(400).json({"message": "ClinicalPlan registration not open yet"});
+        }
         const user = req.session.user;
         if(user.type != "student"){
             return res.status(400).json({message: "Only Students can register for a Clinical Plan!"});
@@ -119,11 +125,42 @@ export const addClinicalPlan = async (req, res) => {
             }
             req.body.studentId = studentId;
             req.body.student_object = student_details._id;
+            const semesterOptions = await SemesterOptions.find({"semester_sequence": req.body.semester_sequence});
+            semesterOptions.seats_filled = semesterOptions.seats_filled+1;
             const clinical_plan = new ClinicalPlan(req.body);
             await clinical_plan.save();
             return res.status(200).json(clinical_plan);
         }
     } catch (err) {
+        return res.status(400).json({ message: err.message });
+    }
+};
+
+// ON/OFF Clinical Plan registration
+export const toggleClinicalPlanRegistration = async (req, res) => {
+    try{
+        const user = req.session.user;
+        const {registration_open} = req.body;
+        req.body.updated_by = user._id;
+        if(registration_open && (!(typeof(registration_open) == "boolean"))){
+            return res.status(400).json({"message": "Invalid data provided"});
+        }
+        const toggleObj = await ToggleClinicalPlanRegister.findOneAndUpdate({}, req.body, {returnOriginal: false});
+        if(!toggleObj){
+            return res.status(400).json({message: "Update Unsuccessfull"});
+        }
+        return res.status(200).json({data: toggleObj, message: "Updated Successfully"});
+    }catch(err){
+        return res.status(400).json({ message: err.message });
+    }
+};
+
+// get details of clinical plan toggle
+export const clinicalPlanToggleDetails = async (req, res) => {
+    try{
+        const toggleDetails = await ToggleClinicalPlanRegister.findOne({});
+        return res.status(200).json({data: toggleDetails});
+    }catch(err){
         return res.status(400).json({ message: err.message });
     }
 };
