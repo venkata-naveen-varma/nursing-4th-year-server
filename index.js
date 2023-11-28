@@ -36,9 +36,7 @@ app.use("", indexRouter);
 (async function init() {
     try {
         await connectToDB();
-        app.listen(port, () => console.log(`Server is listening...`));
-        // app.listen(PORT, () => console.log(`Express is listening at mongodb+srv://kzstar:Karan123@cluster0.vowlw1a.mongodb.net/?retryWrites=true&w=majority`));
-        // app.listen(PORT, () => console.log(`Express is listening at http://localhost:${PORT}`));
+        app.listen(port, () => console.log(`Server is listening on port ${port}`));
     } catch (err) {
         console.warn(err);
     }
