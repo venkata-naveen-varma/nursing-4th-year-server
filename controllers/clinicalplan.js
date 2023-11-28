@@ -66,6 +66,13 @@ export const setSemOptions = async (req, res) => {
             return res.status(400).json({message: "Only Admins can edit a Clinical Plan."});
         }
 
+        // reset the available seats for each semester option
+        if(req.body.reset_seats_filled === true){
+            const semesterOption = await SemesterOptions.updateMany({}, {"seats_filled": 0}, {returnOriginal: false});
+            const all_options = await SemesterOptions.find({});
+            return res.status(200).json({data: all_options, message: "Seats availability reset successfull."});
+        }
+
         const options = Object.keys(req.body);
         
         for(let i in options){
