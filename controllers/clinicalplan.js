@@ -100,7 +100,7 @@ export const delSemOptions = async (req, res) => {
         if(user.type == "student"){
             return res.status(400).json({message: "Only Admins can edit a Clinical Plan."});
         }
-        await SemesterOptions.remove({});
+        await SemesterOptions.deleteMany({});
         return res.status(200).json({message: "Semester Options deleted successfully."});
     } catch (err) {
         return res.status(400).json({ message: err.message });
