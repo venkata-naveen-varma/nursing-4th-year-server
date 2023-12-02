@@ -107,7 +107,7 @@ export const deleteAgency = async (req, res) => {
             return res.status(401).json({message: "Unauthorized access!"});
         }
         const id = req.body._id;
-        agency = await Agency.findByIdAndDelete(id);
+        const agency = await Agency.findByIdAndDelete(id);
         if(!agency){
             return res
                 .status(400)
