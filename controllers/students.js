@@ -179,12 +179,18 @@ export const registerToHospital = async (req, res) => {
             return res.status(400).json({"message": "Hospital registration not open yet"});
         }
         
-        const student = await Student.findOne({"email": req.session.user.username});
+        const student = await Student.findOne({"email": req.session.user.username}).populate("placements.agency");
         const {placement_type, agency_name, notes} = req.body;
         if(!placement_type || !agency_name){
             return res.status(400).json({message: "Please fill the details first"});
         }
         const agency_type = "hospital";
+        // check if student already registered for same agency_type, one student one hospital/community only
+        for(let i=0;i<student.placements.length;i++){
+            if(student.placements[i].agency.agency_type === agency_type){
+                return res.status(400).json({message: "Already registered for a Hospital!"});
+            }
+        }
         const agency = await Agency.findOne({"name": agency_name, placement_type, agency_type});
         let placement_list = agency.placements;
         // check for duplicate request
@@ -217,12 +223,18 @@ export const registerToCommunity = async (req, res) => {
             return res.status(400).json({"message": "Community registration not open yet"});
         }
 
-        const student = await Student.findOne({"email": req.session.user.username});
+        const student = await Student.findOne({"email": req.session.user.username}).populate("placements.agency");
         const {placement_type, agency_name, notes} = req.body;
         if(!placement_type || !agency_name){
             return res.status(400).json({message: "Please fill the details first"});
         }
         const agency_type = "community";
+        // check if student already registered for same agency_type, one student one hospital/community only
+        for(let i=0;i<student.placements.length;i++){
+            if(student.placements[i].agency.agency_type === agency_type){
+                return res.status(400).json({message: "Already registered for a Community!"});
+            }
+        }
         const agency = await Agency.findOne({"name": agency_name, placement_type, agency_type});
         let {current_capacity} = agency;
         let placement_list = agency.placements;

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Agency from "../models/agency.js";
 import User from "../models/users.js";
 import ToggleAgencyRegister from "../models/toggleAgencyRegistration.js";
+import Student from "../models/students.js";
 
 export const getAgencies = async (req, res) => {
     try {
@@ -113,6 +114,8 @@ export const deleteAgency = async (req, res) => {
                 .status(400)
                 .json({ message: "Requested agency does not exist." });
         }
+        // remove the agency from student placement list
+        await Student.updateMany({"placements.agency": id}, { $pull: { placements: { "agency": id}}}, {new: true});
         return res.status(200).json({ message: "Successfully deleted" });
     } catch (err) {
         return res.status(400).json({ message: err.message });
