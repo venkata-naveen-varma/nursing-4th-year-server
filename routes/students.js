@@ -12,7 +12,7 @@ router.post("/hospital", Auth, registerToHospital);
 router.post("/community", Auth, registerToCommunity);
 router.post("/placements", Auth, studentPlacements);
 router.post("/placementTypes", Auth, placementTypes);
-router.post("/addstudent", Auth, addStudent);
+router.post("/add", Auth, addStudent);
 router.post("/delete", Auth, deleteStudent);
 router.post("/agencyNames", Auth, agencyNames);
 // router.post("/update", Auth, updateStudent);
