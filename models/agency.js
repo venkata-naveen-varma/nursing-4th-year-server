@@ -10,7 +10,7 @@ const AgencySchema = new mongoose.Schema({
     description: { type: String, trim: true },
     website: { type: String, trim: true },
     student_roles: { type: String, trim: true },
-    lab_practice_required: { type: Boolean, required: true},
+    lab_practice_required: { type: Boolean, default: true},
     required_readings: { type: String, trim: true },
     car_needed: { type: Boolean, Default: false},
     languages: { type: String, trim: true },
