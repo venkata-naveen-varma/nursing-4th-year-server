@@ -277,10 +277,10 @@ export const studentPlacements = async (req, res) => {
        }
         if(!id && user.type == "admin"){
             // if request is from admin without student record id return all student placement details
-            const student = await Student.find({}, 'studentId fname lname email year term')
+            const student = await Student.find({"placements": {$not: {$size: 0}}}, 'studentId fname lname email year term')
             .sort({createdAt: -1})
             .populate({path: 'placements.agency', select: ['name','placement_type','agency_type']});
-            return res.status(200).json({student, msg: "list of all student-placement details"});
+            return res.status(200).json({student, msg: "list of Student-Placement details"});
         }
         // if request is from admin with student record id
         const student = await Student.findById(id, 'studentId')
