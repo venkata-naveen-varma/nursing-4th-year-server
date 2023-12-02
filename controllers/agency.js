@@ -176,3 +176,29 @@ export const agencyToggleDetails = async (req, res) => {
         return res.status(400).json({ message: err.message });
     }
 };
+
+export const importAgency = async (req, res) => {
+    try {
+        const failed = [];
+        await Promise.all((req.body || []).map(async (agency) => {
+            try {
+                agency.current_capacity = agency.total_capacity;
+                const agencyModel = await Agency.findOne({ name: agency.name, placement_type: agency.placement_type, agency_type: agency.agency_type});
+                if (agencyModel) {
+                    throw new Error("Agency already exists");
+                } else {
+                    await Agency.create(agency);
+                }
+            } catch (err) {
+                failed.push({
+                    data: agency,
+                    err: err.message
+                });
+                return null;
+            }
+        }));
+        return res.json({ message: "Imported successfully.", failed });
+    } catch (err) {
+        return res.status(400).json({ message: err.message });
+    }
+};
